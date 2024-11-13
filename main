@@ -1,0 +1,51 @@
+import random
+
+# Função de fitness (objetivo) que queremos maximizar
+def fitness(x):
+    return x ** 2
+
+# Inicialização da população (indivíduos aleatórios)
+def initial_population(size, x_min, x_max):
+    return [random.uniform(x_min, x_max) for _ in range(size)]
+
+# Seleção: escolhemos os indivíduos mais aptos para a reprodução
+def selection(population):
+    sorted_population = sorted(population, key=fitness, reverse=True)
+    return sorted_population[:2]  # Seleciona os 2 melhores
+
+# Crossover: cruza os genes dos pais para criar um novo indivíduo
+def crossover(parent1, parent2):
+    return (parent1 + parent2) / 2  # Simples média dos pais
+
+# Mutação: introduz variação aleatória
+def mutation(child, x_min, x_max, mutation_rate=0.1):
+    if random.random() < mutation_rate:
+        return random.uniform(x_min, x_max)
+    return child
+
+# Algoritmo Genético
+def genetic_algorithm(generations, population_size, x_min, x_max):
+    population = initial_population(population_size, x_min, x_max)
+    
+    for generation in range(generations):
+        parents = selection(population)
+        child = crossover(parents[0], parents[1])
+        child = mutation(child, x_min, x_max)
+        
+        # Substituímos o pior indivíduo pelo novo filho
+        population[-1] = child
+        
+        # Imprimimos a melhor solução encontrada até agora
+        best_individual = max(population, key=fitness)
+        print(f"Geração {generation + 1}: Melhor indivíduo = {best_individual}, Fitness = {fitness(best_individual)}")
+    
+    return best_individual
+
+# Parâmetros
+generations = 10
+population_size = 5
+x_min, x_max = -10, 10
+
+# Executa o algoritmo genético
+best_solution = genetic_algorithm(generations, population_size, x_min, x_max)
+print(f"Melhor solução encontrada: {best_solution}, com fitness = {fitness(best_solution)}")
